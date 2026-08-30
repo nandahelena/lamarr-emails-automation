@@ -1,5 +1,5 @@
 config.ini
-destinatarios_reais.csv
-destinatarios_teste.csv
+reais.csv
+teste.csv
 template.html
 log_envios.csv

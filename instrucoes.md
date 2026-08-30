@@ -1,13 +1,25 @@
 # Automação de envio — Projeto Lamarr
 
-## O que tem aqui
+## Estrutura de pastas
 
-- `enviar_emails.py` — o script que faz o envio
-- `template.html` — o e-mail de boas-vindas (o seu template original)
-- `config.example.ini` — modelo de configuração do SMTP
-- `destinatarios_teste.csv` — lista de teste, já com os 2 e-mails que você passou
-- `destinatarios_reais.csv` — lista real, extraída da planilha "Inscrição Alunas respostas.xlsx" (coluna "Endereço de e-mail"), com 38 destinatárias, sem duplicados e sem e-mails inválidos
-- `inscricoes.xlsx` — cópia da planilha original, caso precise reprocessar
+```
+projeto-lamarr-emails/
+├── config.ini                  ← suas credenciais (crie a partir do example, não compartilhe)
+├── config.example.ini          ← modelo de configuração do SMTP
+├── enviar_emails.py            ← o script que faz o envio
+├── LEIA-ME.md
+├── template/
+│   └── template.html           ← o e-mail de boas-vindas (seu template original)
+├── destinatarios/
+│   ├── teste.csv                ← lista de teste, já com os 2 e-mails que você passou
+│   └── reais.csv                ← lista real, extraída da planilha (coluna "Endereço de e-mail"), 38 destinatárias, sem duplicados/inválidos
+└── logs/
+    └── log_envios.csv          ← criado automaticamente a cada envio
+```
+
+Se quiser reprocessar a lista real a partir de uma planilha nova, é só repetir a extração — me chama que eu gero o `destinatarios/reais.csv` de novo.
+
+Os caminhos ficam todos centralizados no topo do `enviar_emails.py`, num bloco chamado `CAMINHOS` — se algum dia quiser mudar a estrutura de novo, só mexe ali, não precisa procurar no resto do script.
 
 ## Passo a passo
 

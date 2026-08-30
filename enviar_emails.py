@@ -12,13 +12,12 @@ Uso:
         -> envia o e-mail para todos os endereços em destinatarios_reais.csv
            (pede confirmação antes de disparar, mostrando quantos destinatários)
 
-Arquivos necessários na mesma pasta:
-    - config.ini                (copie de config.example.ini e preencha)
-    - template.html             (corpo do e-mail)
-    - destinatarios_teste.csv   (colunas: nome,email)
-    - destinatarios_reais.csv   (colunas: nome,email) — já gerado a partir da planilha
-
-Cada envio é registrado em log_envios.csv (sucesso/falha, data/hora).
+Estrutura de pastas esperada (tudo relativo a este arquivo):
+    config.ini                     (copie de config.example.ini e preencha)
+    template/template.html         (corpo do e-mail)
+    destinatarios/teste.csv        (colunas: nome,email)
+    destinatarios/reais.csv        (colunas: nome,email) — já gerado a partir da planilha
+    logs/log_envios.csv            (criado automaticamente a cada envio)
 """
 
 import argparse
@@ -33,10 +32,15 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from pathlib import Path
 
+# ===================== CAMINHOS (ajuste aqui se mudar a estrutura de pastas) =====================
 BASE_DIR = Path(__file__).resolve().parent
 CONFIG_PATH = BASE_DIR / "config.ini"
-TEMPLATE_PATH = BASE_DIR / "template.html"
-LOG_PATH = BASE_DIR / "log_envios.csv"
+TEMPLATE_PATH = BASE_DIR / "template" / "template.html"
+DESTINATARIOS_TESTE_PATH = BASE_DIR / "destinatarios" / "teste.csv"
+DESTINATARIOS_REAIS_PATH = BASE_DIR / "destinatarios" / "reais.csv"
+LOG_DIR = BASE_DIR / "logs"
+LOG_PATH = LOG_DIR / "log_envios.csv"
+# ====================================================================================================
 
 
 def carregar_config():
@@ -71,6 +75,7 @@ def carregar_template():
 
 
 def registrar_log(linhas):
+    LOG_DIR.mkdir(parents=True, exist_ok=True)
     novo_arquivo = not LOG_PATH.exists()
     with open(LOG_PATH, "a", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
@@ -144,18 +149,18 @@ def enviar(cfg, destinatarios, corpo_html, modo):
 def main():
     parser = argparse.ArgumentParser(description="Envio automatizado de e-mails — Projeto Lamarr")
     grupo = parser.add_mutually_exclusive_group(required=True)
-    grupo.add_argument("--teste", action="store_true", help="Envia para a lista de teste (destinatarios_teste.csv)")
-    grupo.add_argument("--real", action="store_true", help="Envia para a lista real (destinatarios_reais.csv)")
+    grupo.add_argument("--teste", action="store_true", help="Envia para a lista de teste (destinatarios/teste.csv)")
+    grupo.add_argument("--real", action="store_true", help="Envia para a lista real (destinatarios/reais.csv)")
     args = parser.parse_args()
 
     cfg = carregar_config()
     corpo_html = carregar_template()
 
     if args.teste:
-        destinatarios = carregar_destinatarios(BASE_DIR / "destinatarios_teste.csv")
+        destinatarios = carregar_destinatarios(DESTINATARIOS_TESTE_PATH)
         enviar(cfg, destinatarios, corpo_html, modo="teste")
     else:
-        destinatarios = carregar_destinatarios(BASE_DIR / "destinatarios_reais.csv")
+        destinatarios = carregar_destinatarios(DESTINATARIOS_REAIS_PATH)
         enviar(cfg, destinatarios, corpo_html, modo="real")
 
 
